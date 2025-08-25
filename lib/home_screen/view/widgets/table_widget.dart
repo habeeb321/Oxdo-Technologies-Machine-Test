@@ -338,6 +338,9 @@ class _TableWidgetState extends State<TableWidget> {
                                       ),
                                       style: const TextStyle(fontSize: 14),
                                       keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
                                       onEditingComplete: () {
                                         // Move focus to remarks field
                                         FocusScope.of(context)
