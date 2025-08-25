@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:oxdo_technologies/home_screen/controller/home_controller.dart';
+import 'package:oxdo_technologies/home_screen/widgets/table_widget.dart';
 import 'package:oxdo_technologies/home_screen/widgets/title_widget.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -24,6 +25,8 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TitleWidget(),
+            const SizedBox(height: 20),
+            TableWidget(),
           ],
         ),
       ),
