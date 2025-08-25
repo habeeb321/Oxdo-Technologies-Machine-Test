@@ -19,9 +19,9 @@ class TableWidget extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: const BorderRadius.only(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(4),
                         topRight: Radius.circular(4),
                       ),
@@ -36,8 +36,7 @@ class TableWidget extends StatelessWidget {
                         0: FlexColumnWidth(0.8),
                         1: FlexColumnWidth(3.5),
                         2: FlexColumnWidth(1),
-                        3: FlexColumnWidth(2),
-                        4: FlexColumnWidth(0.7),
+                        3: FlexColumnWidth(2.5),
                       },
                       children: [
                         TableRow(
@@ -46,7 +45,6 @@ class TableWidget extends StatelessWidget {
                             _buildHeaderCell('Item Name'),
                             _buildHeaderCell('Qty'),
                             _buildHeaderCell('Remarks'),
-                            _buildHeaderCell(''),
                           ],
                         ),
                       ],
@@ -78,8 +76,7 @@ class TableWidget extends StatelessWidget {
                           0: FlexColumnWidth(0.8),
                           1: FlexColumnWidth(3.5),
                           2: FlexColumnWidth(1),
-                          3: FlexColumnWidth(2),
-                          4: FlexColumnWidth(0.7),
+                          3: FlexColumnWidth(2.5),
                         },
                         children: [
                           TableRow(
@@ -184,23 +181,30 @@ class TableWidget extends StatelessWidget {
                                 ),
                               ),
                               _buildDataCell(
-                                TextField(
-                                  controller: row['remarksController'],
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 12),
-                                  ),
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ),
-                              _buildDataCell(
-                                IconButton(
-                                  onPressed: () => controller.deleteRow(index),
-                                  icon: const Icon(Icons.delete,
-                                      color: Colors.red, size: 20),
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: row['remarksController'],
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 12),
+                                        ),
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                    if (controller.materialRequestRows.length >
+                                        1)
+                                      IconButton(
+                                        onPressed: () =>
+                                            controller.deleteRow(index),
+                                        icon: const Icon(Icons.close,
+                                            color: Colors.red, size: 20),
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                      ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -250,7 +254,7 @@ class TableWidget extends StatelessWidget {
         style: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 14,
-          color: Colors.black87,
+          color: Color.fromARGB(255, 5, 46, 112),
         ),
       ),
     );
