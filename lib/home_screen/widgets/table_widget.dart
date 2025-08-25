@@ -240,7 +240,7 @@ class TableWidget extends StatelessWidget {
         style: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 14,
-          color: Colors.black87,
+          color: Color.fromARGB(255, 5, 46, 112),
         ),
       ),
     );
