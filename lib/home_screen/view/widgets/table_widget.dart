@@ -105,7 +105,15 @@ class _TableWidgetState extends State<TableWidget> {
                             children: [
                               TableRow(
                                 children: [
-                                  _buildDataCell(Text((index + 1).toString())),
+                                  _buildDataCell(
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10, left: 10),
+                                      child: Text(
+                                        (index + 1).toString(),
+                                      ),
+                                    ),
+                                  ),
                                   _buildDataCell(
                                     Column(
                                       crossAxisAlignment:
@@ -365,7 +373,7 @@ class _TableWidgetState extends State<TableWidget> {
 
   Widget _buildDataCell(Widget child) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
       child: child,
     );
   }
