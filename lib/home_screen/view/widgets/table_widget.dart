@@ -14,8 +14,45 @@ class _TableWidgetState extends State<TableWidget> {
   final HomeController controller = Get.find<HomeController>();
 
   Map<int, int> selectedSuggestionIndexMap = {};
+  Map<int, ScrollController> scrollControllers = {};
 
-  FocusNode? currentFocusNode;
+  @override
+  void dispose() {
+    for (final sc in scrollControllers.values) {
+      sc.dispose();
+    }
+    super.dispose();
+  }
+
+  ScrollController _getScrollControllerForRow(int index) {
+    if (!scrollControllers.containsKey(index)) {
+      scrollControllers[index] = ScrollController();
+    }
+    return scrollControllers[index]!;
+  }
+
+  void _scrollToSelected(int rowIndex) {
+    final selectedIndex = selectedSuggestionIndexMap[rowIndex] ?? 0;
+    final controller = _getScrollControllerForRow(rowIndex);
+    const itemHeight = 40.0; 
+
+    if (!controller.hasClients) return;
+
+    final viewportHeight = controller.position.viewportDimension;
+    final maxScrollExtent = controller.position.maxScrollExtent;
+
+    double offset =
+        (selectedIndex * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
+
+    if (offset < 0) {
+      offset = 0;
+    } else if (offset > maxScrollExtent) {
+      offset = maxScrollExtent;
+    }
+
+    controller.animateTo(offset,
+        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +118,9 @@ class _TableWidgetState extends State<TableWidget> {
                         int selectedSuggestionIndex =
                             selectedSuggestionIndexMap[index] ?? 0;
 
+                        ScrollController scrollController =
+                            _getScrollControllerForRow(index);
+
                         return Container(
                           decoration: BoxDecoration(
                             border: Border(
@@ -142,6 +182,7 @@ class _TableWidgetState extends State<TableWidget> {
                                                   selectedSuggestionIndexMap[
                                                           index] =
                                                       selectedSuggestionIndex;
+                                                  _scrollToSelected(index);
                                                 });
                                               } else if (event.isKeyPressed(
                                                   LogicalKeyboardKey.arrowUp)) {
@@ -158,6 +199,7 @@ class _TableWidgetState extends State<TableWidget> {
                                                   selectedSuggestionIndexMap[
                                                           index] =
                                                       selectedSuggestionIndex;
+                                                  _scrollToSelected(index);
                                                 });
                                               } else if (event.isKeyPressed(
                                                   LogicalKeyboardKey.enter)) {
@@ -232,6 +274,7 @@ class _TableWidgetState extends State<TableWidget> {
                                               ],
                                             ),
                                             child: ListView.builder(
+                                              controller: scrollController,
                                               shrinkWrap: true,
                                               itemCount: controller
                                                   .filteredProducts.length,
