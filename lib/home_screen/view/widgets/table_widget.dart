@@ -33,13 +33,13 @@ class _TableWidgetState extends State<TableWidget> {
 
   void _scrollToSelected(int rowIndex) {
     final selectedIndex = selectedSuggestionIndexMap[rowIndex] ?? 0;
-    final controller = _getScrollControllerForRow(rowIndex);
-    const itemHeight = 40.0; 
+    final controllerScroll = _getScrollControllerForRow(rowIndex);
+    const itemHeight = 40.0;
 
-    if (!controller.hasClients) return;
+    if (!controllerScroll.hasClients) return;
 
-    final viewportHeight = controller.position.viewportDimension;
-    final maxScrollExtent = controller.position.maxScrollExtent;
+    final viewportHeight = controllerScroll.position.viewportDimension;
+    final maxScrollExtent = controllerScroll.position.maxScrollExtent;
 
     double offset =
         (selectedIndex * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
@@ -50,7 +50,7 @@ class _TableWidgetState extends State<TableWidget> {
       offset = maxScrollExtent;
     }
 
-    controller.animateTo(offset,
+    controllerScroll.animateTo(offset,
         duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
   }
 
@@ -212,12 +212,18 @@ class _TableWidgetState extends State<TableWidget> {
                                                   selectedSuggestionIndexMap[
                                                       index] = 0;
                                                 });
+                                                if (row['qtyFocus'] != null) {
+                                                  FocusScope.of(context)
+                                                      .requestFocus(
+                                                          row['qtyFocus']);
+                                                }
                                               }
                                             }
                                           },
                                           child: TextField(
                                             controller:
                                                 row['itemNameController'],
+                                            focusNode: row['itemNameFocus'],
                                             decoration: const InputDecoration(
                                               border: InputBorder.none,
                                               contentPadding:
@@ -319,6 +325,7 @@ class _TableWidgetState extends State<TableWidget> {
                                   _buildDataCell(
                                     TextField(
                                       controller: row['qtyController'],
+                                      focusNode: row['qtyFocus'],
                                       decoration: const InputDecoration(
                                         border: InputBorder.none,
                                         contentPadding: EdgeInsets.symmetric(
@@ -335,6 +342,7 @@ class _TableWidgetState extends State<TableWidget> {
                                           child: TextField(
                                             controller:
                                                 row['remarksController'],
+                                            focusNode: row['remarksFocus'],
                                             decoration: const InputDecoration(
                                               border: InputBorder.none,
                                               contentPadding:

@@ -14,7 +14,7 @@ class HomeController extends GetxController {
   RxBool showSuggestions = false.obs;
   RxInt currentSearchIndex = (-1).obs;
   RxList<GetAllProductsModel> products = <GetAllProductsModel>[].obs;
-  final loading = false.obs;
+  RxBool loading = false.obs;
 
   @override
   void onInit() {
@@ -41,6 +41,9 @@ class HomeController extends GetxController {
       'itemNameController': TextEditingController(),
       'qtyController': TextEditingController(),
       'remarksController': TextEditingController(),
+      'itemNameFocus': FocusNode(),
+      'qtyFocus': FocusNode(),
+      'remarksFocus': FocusNode(),
     });
   }
 
@@ -49,6 +52,9 @@ class HomeController extends GetxController {
       materialRequestRows[index]['itemNameController'].dispose();
       materialRequestRows[index]['qtyController'].dispose();
       materialRequestRows[index]['remarksController'].dispose();
+      materialRequestRows[index]['itemNameFocus'].dispose();
+      materialRequestRows[index]['qtyFocus'].dispose();
+      materialRequestRows[index]['remarksFocus'].dispose();
       materialRequestRows.removeAt(index);
     }
     showSuggestions.value = false;
@@ -62,14 +68,10 @@ class HomeController extends GetxController {
       showSuggestions.value = false;
       filteredProducts.clear();
     } else {
-      filteredProducts.value = products
-          .where((product) =>
-              product.title!.toLowerCase().contains(query.toLowerCase()) ||
-              product.category
-                  .toString()
-                  .toLowerCase()
-                  .contains(query.toLowerCase()))
-          .toList();
+      filteredProducts.value = products.where((product) {
+        return (product.title?.toLowerCase().contains(query.toLowerCase()) ??
+            false);
+      }).toList();
       showSuggestions.value = filteredProducts.isNotEmpty;
     }
   }
@@ -87,6 +89,9 @@ class HomeController extends GetxController {
       row['itemNameController'].dispose();
       row['qtyController'].dispose();
       row['remarksController'].dispose();
+      row['itemNameFocus'].dispose();
+      row['qtyFocus'].dispose();
+      row['remarksFocus'].dispose();
     }
     super.onClose();
   }
