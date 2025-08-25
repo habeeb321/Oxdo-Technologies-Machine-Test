@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:oxdo_technologies/home_screen/controller/home_controller.dart';
 import 'package:oxdo_technologies/home_screen/widgets/title_widget.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+
+  final controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +17,9 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildBody() {
-    return const SingleChildScrollView(
+    return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
