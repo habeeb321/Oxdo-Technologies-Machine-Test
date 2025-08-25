@@ -1,0 +1,265 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:oxdo_technologies/home_screen/controller/home_controller.dart';
+
+class TableWidget extends StatelessWidget {
+  TableWidget({super.key});
+
+  final HomeController controller = Get.find<HomeController>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(4),
+                        topRight: Radius.circular(4),
+                      ),
+                    ),
+                    child: Table(
+                      border: TableBorder(
+                        horizontalInside:
+                            BorderSide(color: Colors.grey.shade300),
+                        verticalInside: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      columnWidths: const {
+                        0: FlexColumnWidth(0.8),
+                        1: FlexColumnWidth(3.5),
+                        2: FlexColumnWidth(1),
+                        3: FlexColumnWidth(2),
+                        4: FlexColumnWidth(0.7),
+                      },
+                      children: [
+                        TableRow(
+                          children: [
+                            _buildHeaderCell('SI No'),
+                            _buildHeaderCell('Item Name'),
+                            _buildHeaderCell('Qty'),
+                            _buildHeaderCell('Remarks'),
+                            _buildHeaderCell(''),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  ...controller.materialRequestRows
+                      .asMap()
+                      .entries
+                      .map((entry) {
+                    int index = entry.key;
+                    var row = entry.value;
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: index ==
+                                    controller.materialRequestRows.length - 1
+                                ? Colors.transparent
+                                : Colors.grey.shade300,
+                          ),
+                        ),
+                      ),
+                      child: Table(
+                        border: TableBorder(
+                          verticalInside:
+                              BorderSide(color: Colors.grey.shade300),
+                        ),
+                        columnWidths: const {
+                          0: FlexColumnWidth(0.8),
+                          1: FlexColumnWidth(3.5),
+                          2: FlexColumnWidth(1),
+                          3: FlexColumnWidth(2),
+                          4: FlexColumnWidth(0.7),
+                        },
+                        children: [
+                          TableRow(
+                            children: [
+                              _buildDataCell(Text((index + 1).toString())),
+                              _buildDataCell(
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextField(
+                                      controller: row['itemNameController'],
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 12),
+                                        hintText: 'Search items...',
+                                      ),
+                                      style: const TextStyle(fontSize: 14),
+                                      onChanged: (value) => controller
+                                          .updateSearchQuery(value, index),
+                                    ),
+                                    if (controller.showSuggestions.value &&
+                                        controller
+                                            .searchQuery.value.isNotEmpty &&
+                                        controller.currentSearchIndex.value ==
+                                            index)
+                                      Container(
+                                        constraints: const BoxConstraints(
+                                            maxHeight: 150),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(
+                                              color: Colors.grey.shade300),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.3),
+                                              spreadRadius: 1,
+                                              blurRadius: 3,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: controller
+                                              .filteredProducts.length,
+                                          itemBuilder:
+                                              (context, suggestionIndex) {
+                                            var product =
+                                                controller.filteredProducts[
+                                                    suggestionIndex];
+                                            return InkWell(
+                                              onTap: () =>
+                                                  controller.selectProduct(
+                                                      product, index),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color: suggestionIndex ==
+                                                              controller
+                                                                      .filteredProducts
+                                                                      .length -
+                                                                  1
+                                                          ? Colors.transparent
+                                                          : Colors
+                                                              .grey.shade200,
+                                                    ),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  product.title ?? '',
+                                                  style: const TextStyle(
+                                                      fontSize: 12),
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              _buildDataCell(
+                                TextField(
+                                  controller: row['qtyController'],
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 12),
+                                  ),
+                                  style: const TextStyle(fontSize: 14),
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ),
+                              _buildDataCell(
+                                TextField(
+                                  controller: row['remarksController'],
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 12),
+                                  ),
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                              _buildDataCell(
+                                IconButton(
+                                  onPressed: () => controller.deleteRow(index),
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red, size: 20),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+            const SizedBox(height: 15),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: controller.addNewRow,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add, size: 18),
+                    SizedBox(width: 5),
+                    Text('Add Item',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget _buildHeaderCell(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDataCell(Widget child) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      child: child,
+    );
+  }
+}

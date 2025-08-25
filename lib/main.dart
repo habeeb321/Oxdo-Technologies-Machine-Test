@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:oxdo_technologies/home_screen/home_screen.dart';
+import 'package:oxdo_technologies/home_screen/view/home_screen.dart';
 
 void main() {
   runApp(const MyApp());

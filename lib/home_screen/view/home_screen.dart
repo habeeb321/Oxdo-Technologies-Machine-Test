@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:oxdo_technologies/home_screen/controller/home_controller.dart';
-import 'package:oxdo_technologies/home_screen/widgets/table_widget.dart';
-import 'package:oxdo_technologies/home_screen/widgets/title_widget.dart';
+import 'package:oxdo_technologies/home_screen/view/widgets/table_widget.dart';
+import 'package:oxdo_technologies/home_screen/view/widgets/title_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
