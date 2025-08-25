@@ -252,6 +252,11 @@ class _TableWidgetState extends State<TableWidget> {
                                                     index] = 0;
                                               });
                                             },
+                                            onEditingComplete: () {
+                                              FocusScope.of(context)
+                                                  .requestFocus(
+                                                      row['qtyFocus']);
+                                            },
                                           ),
                                         ),
                                         if (controller.showSuggestions.value &&
@@ -333,6 +338,11 @@ class _TableWidgetState extends State<TableWidget> {
                                       ),
                                       style: const TextStyle(fontSize: 14),
                                       keyboardType: TextInputType.number,
+                                      onEditingComplete: () {
+                                        // Move focus to remarks field
+                                        FocusScope.of(context)
+                                            .requestFocus(row['remarksFocus']);
+                                      },
                                     ),
                                   ),
                                   _buildDataCell(
@@ -352,6 +362,30 @@ class _TableWidgetState extends State<TableWidget> {
                                             ),
                                             style:
                                                 const TextStyle(fontSize: 14),
+                                            onEditingComplete: () {
+                                              // Move to next row's itemName field or add new row and focus
+                                              int nextIndex = index + 1;
+                                              if (nextIndex <
+                                                  controller.materialRequestRows
+                                                      .length) {
+                                                FocusScope.of(context)
+                                                    .requestFocus(controller
+                                                                .materialRequestRows[
+                                                            nextIndex]
+                                                        ['itemNameFocus']);
+                                              } else {
+                                                controller.addNewRow();
+                                                Future.delayed(
+                                                    const Duration(
+                                                        milliseconds: 100), () {
+                                                  FocusScope.of(context)
+                                                      .requestFocus(controller
+                                                                  .materialRequestRows[
+                                                              nextIndex]
+                                                          ['itemNameFocus']);
+                                                });
+                                              }
+                                            },
                                           ),
                                         ),
                                         if (controller
