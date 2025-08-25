@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:oxdo_technologies/home_screen/controller/home_controller.dart';
 
-class TableWidget extends StatelessWidget {
-  TableWidget({super.key});
+class TableWidget extends StatefulWidget {
+  const TableWidget({super.key});
 
+  @override
+  State<TableWidget> createState() => _TableWidgetState();
+}
+
+class _TableWidgetState extends State<TableWidget> {
   final HomeController controller = Get.find<HomeController>();
+
+  // Track selected suggestion index per row
+  Map<int, int> selectedSuggestionIndexMap = {};
+
+  FocusNode? currentFocusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +67,11 @@ class TableWidget extends StatelessWidget {
                       .map((entry) {
                     int index = entry.key;
                     var row = entry.value;
+
+                    // Get the selected suggestion index for this row or default 0
+                    int selectedSuggestionIndex =
+                        selectedSuggestionIndexMap[index] ?? 0;
+
                     return Container(
                       decoration: BoxDecoration(
                         border: Border(
@@ -86,17 +102,86 @@ class TableWidget extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    TextField(
-                                      controller: row['itemNameController'],
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 12),
-                                        hintText: 'Search items...',
+                                    RawKeyboardListener(
+                                      focusNode: FocusNode(),
+                                      onKey: (event) {
+                                        if (controller.showSuggestions.value &&
+                                            controller
+                                                    .currentSearchIndex.value ==
+                                                index &&
+                                            controller
+                                                .filteredProducts.isNotEmpty) {
+                                          if (event.isKeyPressed(
+                                              LogicalKeyboardKey.arrowDown)) {
+                                            setState(() {
+                                              selectedSuggestionIndex =
+                                                  (selectedSuggestionIndex +
+                                                          1) %
+                                                      controller
+                                                          .filteredProducts
+                                                          .length;
+                                              selectedSuggestionIndexMap[
+                                                      index] =
+                                                  selectedSuggestionIndex;
+                                            });
+                                          } else if (event.isKeyPressed(
+                                              LogicalKeyboardKey.arrowUp)) {
+                                            setState(() {
+                                              selectedSuggestionIndex =
+                                                  (selectedSuggestionIndex -
+                                                          1 +
+                                                          controller
+                                                              .filteredProducts
+                                                              .length) %
+                                                      controller
+                                                          .filteredProducts
+                                                          .length;
+                                              selectedSuggestionIndexMap[
+                                                      index] =
+                                                  selectedSuggestionIndex;
+                                            });
+                                          } else if (event.isKeyPressed(
+                                              LogicalKeyboardKey.enter)) {
+                                            final product =
+                                                controller.filteredProducts[
+                                                    selectedSuggestionIndex];
+                                            controller.selectProduct(
+                                                product, index);
+                                            setState(() {
+                                              selectedSuggestionIndexMap[
+                                                  index] = 0;
+                                            });
+                                          }
+                                        }
+                                      },
+                                      child: TextField(
+                                        controller: row['itemNameController'],
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 12),
+                                          hintText: 'Search items...',
+                                        ),
+                                        style: const TextStyle(fontSize: 14),
+                                        onChanged: (value) {
+                                          controller.updateSearchQuery(
+                                              value, index);
+                                          setState(() {
+                                            selectedSuggestionIndexMap[index] =
+                                                0;
+                                          });
+                                        },
+                                        onTap: () {
+                                          controller.showSuggestions.value =
+                                              true;
+                                          controller.currentSearchIndex.value =
+                                              index;
+                                          setState(() {
+                                            selectedSuggestionIndexMap[index] =
+                                                0;
+                                          });
+                                        },
                                       ),
-                                      style: const TextStyle(fontSize: 14),
-                                      onChanged: (value) => controller
-                                          .updateSearchQuery(value, index),
                                     ),
                                     if (controller.showSuggestions.value &&
                                         controller
@@ -131,6 +216,8 @@ class TableWidget extends StatelessWidget {
                                             var product =
                                                 controller.filteredProducts[
                                                     suggestionIndex];
+                                            bool isSelected = suggestionIndex ==
+                                                selectedSuggestionIndex;
                                             return InkWell(
                                               onTap: () =>
                                                   controller.selectProduct(
@@ -138,24 +225,17 @@ class TableWidget extends StatelessWidget {
                                               child: Container(
                                                 padding:
                                                     const EdgeInsets.all(8),
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      color: suggestionIndex ==
-                                                              controller
-                                                                      .filteredProducts
-                                                                      .length -
-                                                                  1
-                                                          ? Colors.transparent
-                                                          : Colors
-                                                              .grey.shade200,
-                                                    ),
-                                                  ),
-                                                ),
+                                                color: isSelected
+                                                    ? Colors.blue.shade100
+                                                    : Colors.transparent,
                                                 child: Text(
                                                   product.title ?? '',
-                                                  style: const TextStyle(
-                                                      fontSize: 12),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: isSelected
+                                                        ? Colors.blue
+                                                        : Colors.black,
+                                                  ),
                                                   maxLines: 2,
                                                   overflow:
                                                       TextOverflow.ellipsis,
