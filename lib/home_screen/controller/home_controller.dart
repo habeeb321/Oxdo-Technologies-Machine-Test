@@ -67,10 +67,16 @@ class HomeController extends GetxController {
     if (query.isEmpty) {
       showSuggestions.value = false;
       filteredProducts.clear();
+    } else if (query.length == 1) {
+      filteredProducts.value = products.where((product) {
+        final title = product.title?.toLowerCase() ?? '';
+        return title.startsWith(query.toLowerCase());
+      }).toList();
+      showSuggestions.value = filteredProducts.isNotEmpty;
     } else {
       filteredProducts.value = products.where((product) {
-        return (product.title?.toLowerCase().contains(query.toLowerCase()) ??
-            false);
+        final title = product.title?.toLowerCase() ?? '';
+        return title.contains(query.toLowerCase());
       }).toList();
       showSuggestions.value = filteredProducts.isNotEmpty;
     }
